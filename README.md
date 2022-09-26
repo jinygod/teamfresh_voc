@@ -8,4 +8,4 @@
 
 포함자료: API (controller, service, model, repository, ERD)
 
-배운부분: MyBatis동적쿼리 활용, 다수 테이블 조인, REST API개발의 기초적인 지식
+배운부분: Spring Boot, MyBatis동적쿼리 활용, 다수 테이블 조인, REST API개발
