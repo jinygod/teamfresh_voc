@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<typeAliases>
+		<typeAlias alias="GetVocListDto" type="com.oracle.TeamFresh.model.GetVocListDto"/>
+		<typeAlias alias="GetVocListVo" type="com.oracle.TeamFresh.model.GetVocListVo"/>
+		<typeAlias alias="VocDto" type="com.oracle.TeamFresh.model.VocDto"/>
+		<typeAlias alias="GetCmpstnListDto" type="com.oracle.TeamFresh.model.GetCmpstnListDto"/>
+		<typeAlias alias="PenaltyDto" type="com.oracle.TeamFresh.model.PenaltyDto"/>
+		<typeAlias alias="CompensationDto" type="com.oracle.TeamFresh.model.CompensationDto"/>
+		<typeAlias alias="GetCmpsListVo" type="com.oracle.TeamFresh.model.GetCmpsListVo"/>
+	</typeAliases>
+</configuration>

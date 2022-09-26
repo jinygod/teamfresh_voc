@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="TeamFreshDao">  
+	
+		<insert id="insertVoc" parameterType="VocDto">
+		insert into voc(voc_no, client_no, logis_no, dman_no, cause_user_id, discontent_reason, compensation_flag, creation_user_id, creation_date) 
+		values(VOC_NO_SEQ.nextval, #{client_no}, #{logis_no}, #{dman_no}, #{cause_user_id}, #{discontent_reason}, #{compensation_flag}, #{creation_user_id},
+		<choose>
+		<when test='creation_date != null'> #{creation_date})</when>
+		<otherwise>sysdate)</otherwise>
+		</choose>
+	</insert>
+
+	
+	<select id="getVocList" resultType="GetVocListDto" parameterType="GetVocListVo">
+		<![CDATA[
+		select v.voc_no, decode(v.cause_user_id, 'L', l.logis_name, cl.client_name) as causer_name,  v.discontent_reason, d.dman_name, c.compensation_no, p.penalty_no, p.penalty_accept_flag, p.app_push_flag 
+			from voc v, deliveryman d, compensation c, penalty p, logistics l, clients cl
+				where v.dman_no=d.dman_no
+				  and v.voc_no = c.voc_no(+) 
+				  and v.voc_no = p.voc_no(+)
+				  and v.logis_no=l.logis_no
+				  and v.client_no=cl.client_no
+		 		  and v.creation_date between to_date(#{startDt, jdbcType=VARCHAR}, 'YYYYMMDD') AND to_date(#{endDt, jdbcType=VARCHAR}, 'YYYYMMDD')+1
+		]]>
+ 		<if test='clntName != null'>
+   		and cl.client_name like '%'||#{clntName, jdbcType=VARCHAR}||'%'
+ 		</if>
+ 		<if test='lgsName != null'>
+   		and l.logis_name like '%'||#{lgsName, jdbcType=VARCHAR}||'%'
+ 		</if>
+ 		<if test='dlvName != null'>
+   		and d.dman_name like '%'||#{dlvName, jdbcType=VARCHAR}||'%'
+ 		</if>
+ 		order by voc_no
+	</select>
+
+
+	<select id="getCmpstnList" resultType="GetCmpstnListDto" parameterType="GetCmpsListVo">
+		<![CDATA[
+		select c.compensation_no, decode(v.cause_user_id, 'L', l.logis_name, cl.client_name) causer_name, d.dman_name,v.discontent_reason , c.compensation_price, cl.client_name,c.creation_date
+			from compensation c, voc v, logistics l, clients cl, deliveryman d
+				where c.voc_no = v.voc_no
+				and v.client_no=cl.client_no
+				and v.logis_no=l.logis_no
+				and v.dman_no=d.dman_no	
+				and c.creation_date between to_date(#{startDt, jdbcType=VARCHAR}, 'YYYYMMDD') AND to_date(#{endDt, jdbcType=VARCHAR}, 'YYYYMMDD')+1
+		]]>
+		<if test='startMoney != null and endMoney != null'>
+			and c.compensation_price between #{startMoney, jdbcType=NUMERIC} AND #{endMoney, jdbcType=NUMERIC}
+		</if>
+		
+		<if test='lgsName != null'>
+   			and l.logis_name like '%'||#{lgsName}||'%
+ 		</if>
+		
+		<if test='dlvName != null'>
+   			and l.d.dman_name like '%'||#{dlvName}||'%
+ 		</if>
+	</select>
+
+	
+	<insert id="insertCompensation" parameterType="CompensationDto">
+		insert into compensation(compensation_no, voc_no, compensation_price, creation_user_id, creation_date) 
+		values(COMPENSATION_NO_SEQ.nextval, #{voc_no},#{compensation_price},#{creation_user_id},
+		<choose>
+			<when test='creation_date != null'> #{creation_date})</when>
+			<otherwise>sysdate)</otherwise>
+		</choose>
+		
+	</insert>
+	
+	
+	<insert id="insertPenalty" parameterType="PenaltyDto">
+		insert into penalty (penalty_no, voc_no, compensation_no, creation_user_id,  creation_date)  
+		values(PENALTY_NO_SEQ.nextval, #{voc_no},#{compensation_no},#{creation_user_id},
+		<choose>
+			<when test='creation_date != null'> #{creation_date})</when>
+			<otherwise>sysdate)</otherwise>
+		</choose>
+		
+	</insert>
+	
+	<update id="updatePenaltyFlag" parameterType="PenaltyDto">
+		update penalty set app_push_flag=#{app_push_flag}, penalty_accept_flag=#{penalty_accept_flag}, penalty_modify_date=sysdate where PENALTY_NO = #{penalty_no}
+	</update>
+	
+
+
+</mapper>
